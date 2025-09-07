@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JARVIS Voice Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>JARVIS Voice Assistant</h1>
+            <p>Say "Hey Jarvis" to activate me</p>
+        </header>
+        
+        <div class="assistant-container">
+            <div class="assistant-icon">
+                <div class="pulse-ring"></div>
+                <div class="mic-icon" id="micIcon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="startBtn" class="control-btn start-btn">Start Listening</button>
+                <button id="stopBtn" class="control-btn stop-btn">Stop Listening</button>
+            </div>
+            
+            <div class="status-display">
+                <p id="statusText">Status: Not listening</p>
+            </div>
+            
+            <div class="command-display">
+                <p id="commandText">Your command will appear here...</p>
+            </div>
+            
+            <div class="response-display" id="responseArea">
+                <p id="responseText">Response will appear here...</p>
+            </div>
+            
+            <div class="audio-settings">
+                <h3>Microphone Settings</h3>
+                <p>If JARVIS can't hear you:</p>
+                <ol>
+                    <li>Check if your microphone is connected</li>
+                    <li>Allow microphone access in your browser</li>
+                    <li>Ensure no other applications are using the microphone</li>
+                </ol>
+            </div>
+            
+            <div class="examples">
+                <h3>Try saying:</h3>
+                <div class="example-categories">
+                    <div class="category">
+                        <h4>Websites</h4>
+                        <ul>
+                            <li>"Open YouTube"</li>
+                            <li>"Open Google and search Python"</li>
+                            <li>"Open Amazon"</li>
+                            <li>"Open Facebook"</li>
+                            <li>"Open LinkedIn"</li>
+                            <li>"Open GitHub"</li>
+                            <li>"Open Netflix"</li>
+                            <li>"Open Twitter"</li>
+                            <li>"Open Instagram"</li>
+                            <li>"Open Reddit"</li>
+                            <li>"Open Stack Overflow"</li>
+                            <li>"Open Gmail"</li>
+                            <li>"Open WhatsApp"</li>
+                            <li>"Open Quora"</li>
+                            <li>"Open Pinterest"</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="category">
+                        <h4>Applications</h4>
+                        <ul>
+                            <li>"Open calculator"</li>
+                            <li>"Open notepad"</li>
+                            <li>"Open paint"</li>
+                            <li>"Open word"</li>
+                            <li>"Open excel"</li>
+                            <li>"Open powerpoint"</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="category">
+                        <h4>Information</h4>
+                        <ul>
+                            <li>"What time is it?"</li>
+                            <li>"What's the date today?"</li>
+                            <li>"Tell me about Python"</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="category">
+                        <h4>Media & System</h4>
+                        <ul>
+                            <li>"Play Despacito"</li>
+                            <li>"Volume up"</li>
+                            <li>"Take screenshot"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const statusText = document.getElementById('statusText');
+            const commandText = document.getElementById('commandText');
+            const responseText = document.getElementById('responseText');
+            const micIcon = document.getElementById('micIcon');
+            const responseArea = document.getElementById('responseArea');
+
+            startBtn.addEventListener('click', function() {
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                statusText.textContent = 'Status: Listening for "Hey Jarvis"...';
+                micIcon.classList.add('listening');
+                
+                fetch('/start_listening', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        statusText.textContent = 'Status: Listening for "Hey Jarvis"...';
+                        responseText.textContent = 'Say "Hey Jarvis" to activate me';
+                    } else {
+                        statusText.textContent = 'Status: Error starting listener';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    statusText.textContent = 'Status: Error starting listener';
+                });
+            });
+
+            stopBtn.addEventListener('click', function() {
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                statusText.textContent = 'Status: Not listening';
+                micIcon.classList.remove('listening');
+                
+                fetch('/stop_listening', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        statusText.textContent = 'Status: Not listening';
+                        responseText.textContent = 'Listening stopped';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+
+            // Poll for logs every second
+            setInterval(() => {
+                fetch('/get_logs')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.logs.length > 0) {
+                        data.logs.forEach(log => {
+                            const p = document.createElement('p');
+                            p.textContent = log;
+                            responseArea.appendChild(p);
+                            responseArea.scrollTop = responseArea.scrollHeight;
+                        });
+                    }
+                })
+                .catch(error => console.error('Error fetching logs:', error));
+            }, 1000);
+
+            stopBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>
