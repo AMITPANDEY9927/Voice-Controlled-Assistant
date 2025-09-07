@@ -24,10 +24,10 @@ JARVIS-Voice-Assistant/
 ├── README.md                # This documentation file
 │
 ├── templates/               # HTML templates for the web interface
-│   └── index.html
+│   └── index.html           # The main HTML file for the user interface
 │
 ├── static/                  # Static files like CSS and JavaScript
-│   └── style.css
+│   └── style.css            # CSS styles for the web interface
 │
 └── JARVIS_Voice_Assistant_Report.docx   # Project report file
 ```
@@ -73,11 +73,13 @@ You need the following Python libraries:
      source venv/bin/activate
      ```
 
-4. **Install required libraries:**
+4. **Install the required libraries using pip:**
 
    ```bash
    pip install -r requirements.txt
    ```
+
+   This will install all the necessary libraries mentioned in `requirements.txt` including Flask, SpeechRecognition, pyttsx3, and others.
 
 ## ▶ How to Run
 
@@ -103,6 +105,12 @@ You need the following Python libraries:
 
 5. View the recognized commands and responses on the webpage.
 
+## 📂 About HTML and CSS
+
+- The **templates/index.html** file is responsible for the web interface layout, buttons, status display, and examples of commands.
+- The **static/style.css** file styles the web interface with colors, animations, and layout adjustments for better user experience.
+- These files work together with Flask to provide a dynamic and interactive platform where the assistant listens for commands and displays the output in real-time.
+
 ## ⚙ Notes
 
 ✔ Works best on Windows because `pyttsx3` with `pypiwin32` is configured for it.  
@@ -112,7 +120,7 @@ You need the following Python libraries:
 ## 📈 Future Improvements
 
 - Add more commands for browsing and system tasks.
-- Integrate machine learning models for smarter responses.
+- Integrate AI models for smarter responses.
 - Improve speech recognition accuracy and handle errors more gracefully.
 
 Feel free to explore, contribute, and enhance this project!
